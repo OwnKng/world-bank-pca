@@ -1,0 +1,247 @@
+---
+title: "README"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+
+options(scipen = 9999)
+```
+
+```{r}
+development_indicators <- vroom::vroom("data/WDIData.csv") 
+
+indicators <- read_csv("data/indicators.csv")
+
+development_indicators <- development_indicators %>% 
+  semi_join(indicators, by = c("Indicator Code" = "indicator_code"))
+
+```
+
+```{r}
+
+development_indicators <- development_indicators %>% 
+  select(`Country Name`, `Country Code`, `Indicator Name`, 5:last_col(offset = 1)) %>% 
+  pivot_longer(cols = 4:last_col(), names_to = "year", values_to = "value", names_transform = list(year = as.numeric)) %>% 
+  janitor::clean_names()
+
+development_indicators
+
+```
+
+Get the latest value for each indicator
+```{r}
+development_indicators_latest <- development_indicators %>% 
+  filter(!is.na(value), year < 2020) %>% 
+  group_by(country_name, indicator_name) %>% 
+  filter(year == max(year)) %>% 
+  ungroup()
+
+development_indicators_latest
+```
+
+```{r}
+development_indicators_latest %>% 
+  ggplot(aes(year, indicator_name)) +
+  geom_point()
+
+```
+
+```{r}
+development_indicators_latest <- development_indicators_latest %>% filter(year >= 2016)
+
+development_indicators_latest <- development_indicators_latest %>%  
+  complete(nesting(country_code, country_name), indicator_name) 
+
+development_indicators_latest %>% 
+  ggplot(aes(indicator_name, country_name)) +
+  geom_tile(aes(fill = is.na(value))) +
+  theme(axis.text.x = element_text(angle = 90))
+
+```
+
+```{r}
+regions <- read_csv("data/continents2.csv") %>% 
+  select("country_code" = 3, region, "sub_region" = 7)
+
+development_indicators_latest <- development_indicators_latest %>% 
+  inner_join(regions)
+
+```
+
+```{r}
+
+development_indicators_latest %>% 
+  ggplot(aes(value)) + 
+  geom_density() +
+  facet_wrap(~indicator_name, scales = "free")
+
+```
+
+```{r}
+
+development_indicators_latest %>% 
+  select(-year) %>% 
+  pivot_wider(names_from = indicator_name, values_from = value) %>% 
+  pivot_longer(cols = -c(country_code, country_name, 
+                         `GDP per capita (current US$)`, region, sub_region), 
+               names_to = 'indicator', values_to = 'value') %>% 
+  janitor::clean_names() %>% 
+  ggplot(aes(gdp_per_capita_current_us, value)) + 
+  geom_point(aes(color = region)) +
+  scale_x_log10() + 
+  facet_wrap(~indicator, scales = "free_y") + 
+  theme(legend.position = 'top')
+
+```
+
+```{r}
+development_indicators_latest %>% 
+  group_by(country_name) %>% 
+  summarise(missing = sum(is.na(value))) %>% 
+  arrange(desc(missing))
+
+```
+
+
+```{r}
+development_indicators_latest %>% 
+  group_by(indicator_name) %>% 
+  summarise(missing = sum(is.na(value))) %>% 
+  arrange(desc(missing))
+
+missing_indicators <- c("Educational attainment, at least completed primary, population 25+ years, total (%) (cumulative)", 
+                        "Educational attainment, at least Bachelor's or equivalent, population 25+, total (%) (cumulative)",
+                        'Literacy rate, adult total (% of people ages 15 and above)',
+                        'Government expenditure on education, total (% of GDP)')
+
+```
+
+```{r}
+development_indicators_latest <- development_indicators_latest %>% 
+  filter(!(indicator_name %in% c(missing_indicators)))
+
+development_indicators_latest
+
+```
+
+```{r}
+
+missing_datapoints <- development_indicators_latest %>% 
+  group_by(country_name) %>% 
+  summarise(missing = sum(is.na(value))) %>% 
+  arrange(desc(missing)) %>% 
+  filter(missing > 0)
+
+development_indicators_latest <- development_indicators_latest %>% 
+  anti_join(missing_datapoints) %>% 
+  select(-year)
+
+development_indicators_latest %>% 
+  count(country_name)
+
+```
+```{r}
+
+fh_scores <- read_csv("data/fh_with_region.csv") %>% select(country_code, `Political rights score`, `Civil liberties score`) 
+
+```
+
+
+
+
+
+
+```{r}
+demographics <- read_csv("data/demographics-wide.csv") %>% 
+  select(-year, -country_name)
+
+demographics <- demographics %>% 
+  select(country_code, `Populated aged 0 - 20`, `Populated aged 20 - 40`) %>% 
+  mutate(`Population aged 0 - 40` = `Populated aged 0 - 20` + `Populated aged 20 - 40`) %>% 
+  select(country_code, `Population aged 0 - 40`)
+
+```
+
+```{r}
+gdp_growth <- read_csv("data/economic-growth.csv") %>% 
+  select(-country_name) %>% 
+  filter(!is.na(`5-year average GDP growth`), !is.na(`5-year average GDP per capita growth`)) 
+
+```
+
+
+```{r}
+wgi <- read_csv("data/wgi-governance.csv") %>% select(-country_name) 
+
+```
+
+```{r}
+get_indicators <- function(.data, .indicator_category) {
+  indicators <- .data %>% select(where(is.numeric)) %>% colnames()
+  
+  tibble(
+    indicator_category = .indicator_category,
+    indicator_name = indicators
+  )
+  
+}
+
+categories <- c('Freedom and Rights', 'Economic fundamentals', 'Demographics', 'Governance')
+
+datasets <- list(fh_scores, gdp_growth, demographics, wgi)
+
+additional_indicators <- map2(datasets, categories, get_indicators) %>% 
+  bind_rows()
+
+```
+
+
+```{r}
+
+indicators <- indicators %>% 
+  distinct(indicator_category, indicator_name) %>% 
+  bind_rows(additional_indicators)
+
+indicators %>% 
+  write_csv("data/indicators-all.csv")
+
+```
+
+
+```{r}
+
+development_indicators_latest <- development_indicators_latest %>% 
+  pivot_wider(names_from = indicator_name, values_from = value) 
+
+```
+
+
+```{r}
+
+development_indicators_latest <- inner_join(development_indicators_latest, gdp_growth, by = 'country_code')
+development_indicators_latest <- development_indicators_latest %>% inner_join(wgi, by = 'country_code')
+development_indicators_latest <- development_indicators_latest %>% inner_join(fh_scores, by = 'country_code')
+development_indicators_latest <- inner_join(development_indicators_latest, demographics, by = 'country_code')
+
+```
+
+```{r}
+development_indicators_latest %>% 
+  write_csv("data/development-indicators-latest.csv")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

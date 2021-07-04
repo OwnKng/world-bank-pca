@@ -1,0 +1,226 @@
+---
+title: "analysis"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
+options(scipen = 9999)
+```
+
+For this analysis we have compiled a dataset of 26 numeric indicators across 170 countries. The data relates to either 2019 or (if this was unavailable) the latest year no earlier than 2016. These 170 countries are those with a complete dataset - any country missing any data was excluded from the analysis. 
+
+The 26 indicators are grouped into six categories:
+* Economic fundamentals
+* Demographics
+* Freedom and Rights
+* Governance
+* Health and Education
+* Infrastructure
+
+```{r}
+library(tidyverse)
+
+# Consolidated indicators
+development_indicators <- read_csv("data/development-indicators-latest.csv")
+
+# Indicators grouped into categories
+indicators <- read_csv("data/indicators-all.csv")
+```
+
+The chart below shows the distribution of each numeric variable we use in the analysis. 
+
+```{r, fig.height=14}
+
+development_indicators %>% 
+  pivot_longer(cols = where(is.numeric), names_to = 'name', values_to = 'value') %>% 
+  ggplot(aes(value)) + 
+  geom_density(fill = '#98A6D4') + 
+  facet_wrap(~str_wrap(name, 30), scales = 'free', ncol = 3) + 
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), 
+        strip.text.x = element_text(size = 10))  + 
+  labs(x = "", y = "", title = "Distribution of indicators")
+```
+
+## Principal component analysis
+Many of the variables in our data vary together (covary), and the variation in one variable is likely to be duplicated in another. Principal component analysis (PCA) is a way of identifying the ways in which numeric predictors covary. The outcome of PCA is a smaller set of predictors than our original data that retain most of the variability of the full set of data. These predictors are called principal components, and are composites of the original predictors multiplied by a set of weights. 
+
+The tidymodels package in R provides a simple API for running principal components analysis on our data. We first load the package, and then specify a recipe for our model. In our recipe, we set the role of our categories, such as the country code, name and region as *ids*, so these are set aside from the modelling. 
+
+We also log transform some of our most skewed variables, and then normalise all our predictors. Normalisation converts each variable to a common scale of units, where the means are 0 and the standard deviations are 1. These two steps are required so that highly skewed variables (such as population) or those with very large numbers (such as GDP) don't solely determine the outcome of the model. Log transforming reduces the range of the variables and normalising ensures all variables are expressed on the same scale of units. 
+
+We also set a threshold in our call to `step_pca()`. This ensures that when we extract the PCA-transformed values, we'll only retain those components which cumulatively explain 80% of the variation in the data. 
+
+```{r}
+library(tidymodels)
+
+development_recipe <- recipe(~ ., data = development_indicators) %>% 
+  update_role(country_code, country_name, region, sub_region, new_role = 'id') %>% 
+  step_log(`GDP (current US$)`, 
+           `Land area (sq. km)`,
+           `Population, total`, 
+           `Population density (people per sq. km of land area)`, base = 2) %>% 
+  step_normalize(all_predictors()) %>% 
+  step_pca(all_predictors(), threshold = 0.8)
+
+development_prep <- prep(development_recipe)
+
+development_prep
+
+```
+
+The table below shows the proportion of variance explained by the returned principal components. Our original dataset consisted of 26 predictors, but the PCA has been able to reduce the number of predictors to just five components and still return slightly more than 80% of the variance in the original data. 
+
+```{r}
+summary(development_prep$steps[[3]]$res)
+
+```
+
+Let's have a look at the most important variables to the top five principal components. The graph below shows which of the original variables contribute the most to the overall component scores.  
+
+We can see that governance indicators feature prominently in the first principal component, as well as infrastructure variables related to Internet connectivity. The number of people under the age of 40 also contributes heavily to this component. Given that PC1 explains almost half the variation in our data, these are some of the most important predictors in the analysis to explaining variation between countries. 
+
+The second principal component contains several variables related to absolute size or 'bigness', such as a country's population, economic output and land area. We also see in this component the civil liberties and political rights scores of countries, which also explain much of the variation in the data.   
+
+```{r fig.width=12, fig.height=14}
+tidyied_pca <- tidy(development_prep, 3)
+
+tidyied_pca <- tidyied_pca %>% 
+  inner_join(indicators, by = c("terms" = "indicator_name"))
+
+library(tidytext)
+
+tidyied_pca %>% 
+  filter(str_extract(component, "(\\d)+") %>% as.numeric() <= 5) %>% 
+  group_by(component) %>% 
+  top_n(n = 8, wt = abs(value)) %>% 
+  mutate(component = fct_inorder(component)) %>% 
+  ungroup() %>% 
+  mutate(terms = reorder_within(terms, abs(value), component)) %>% 
+  ggplot(aes(abs(value), terms)) + 
+  geom_col(aes(fill = indicator_category)) + 
+  geom_vline(xintercept = 0) + 
+  scale_y_reordered() + 
+  guides(fill = guide_legend(title = "Category")) + 
+  theme(axis.text = element_text(size = 9), legend.position = 'top') + 
+  facet_wrap(~component, ncol = 2, scales = 'free') + 
+  labs(x = "", y = "")
+
+```
+
+We can also visualise the variation along the first two principal components together. Using the `bake()` function from tidymodels, we can return the development data transformed into the principal component space. 
+
+The scatter plot shows the projection of each country into the first two principal components. We can see many European nations to the left hand side of the chart, these are countries which are likely to score well in the governance indicators, life expectancy, and Internet usage. The right hand side features many African nations, who will perform less well on these indicators. 
+
+As PC2 heavily relates to size, we can see towards the top of the visualisation many small nations (such as Grenada, Tonga and Kiribati) and large ones at the other end of the y axis (such as China, Russia and Brazil). 
+
+```{r}
+development_bake <- bake(development_prep, new_data = NULL)
+
+development_bake %>% 
+  ggplot(aes(PC1, PC2)) + 
+  geom_point(aes(color = region)) + 
+  geom_text(aes(label = country_name), check_overlap = TRUE)
+
+```
+
+## Clustering the principal component scores using kmeans
+We'll now cluster the countries in the principal component space using kmeans clustering. Kmeans is a simple yet very popular clustering technique that divides the data into k clusters by minimising the sum of the squared distances of each record to its assigned cluster. 
+
+We'll run the kmeans algorithm on with different values supplied to our k parameter. 
+
+```{r}
+set.seed(2021)
+
+development_kmeans <- development_bake %>% 
+  select(where(is.numeric))
+
+kclusts <- 
+  tibble(k = 1:9) %>% 
+  mutate(
+    kclust = map(k, ~kmeans(development_kmeans, .x)),
+    glanced = map(kclust, glance),
+    tidyied = map(kclust, tidy),
+    augmented = map(kclust, augment, development_kmeans)
+  )
+
+kclusts
+
+```
+
+Identifying the ideal number of clusters in our data is quite hard. We see the drop in 'withiness' reduces after three clusters, but three clusters is likely to small to be much use in our case. We will, therefore, opt for four clusters. 
+
+```{r}
+clusterings <- kclusts %>%
+  unnest(cols = c(glanced))
+
+clusterings %>% 
+  ggplot(aes(k, tot.withinss)) +
+  geom_line() +
+  geom_point()
+
+centres <- kclusts %>% 
+  filter(k == 4) %>% 
+  unnest(tidyied)
+
+```
+
+
+
+```{r}
+assignments <- kclusts %>% 
+  filter(k == 4) %>% 
+  unnest(cols = c(augmented)) %>% 
+  pull(.cluster)
+
+development_bake$cluster <- assignments 
+
+```
+
+Let's now project these clusters back into our principal component scatter plot. We can see how the clustering algorithm has split these countries based on their position in the component space. 
+
+```{r}
+
+development_bake %>% 
+  ggplot(aes(PC1, PC2, color = cluster)) + 
+  geom_point() + 
+  geom_text(aes(label = country_name), color ='black', check_overlap = TRUE) + 
+  geom_rug()
+
+```
+
+Finally, we'll develop some terminology around each cluster to aid interpretation and project them onto a map. 
+
+```{r}
+development_bake <- development_bake %>% 
+  mutate(cluster_label = case_when(cluster == 1 ~ "Poor, but young",
+                                   cluster == 2 ~ "Small, (mostly) free and developing",
+                                   cluster == 3 ~ "(mostly) big and developing",
+                                   cluster == 4 ~ "Rich, well governed and free"))
+
+development_indicators <- development_indicators %>% 
+  inner_join(development_bake %>% select(country_code, cluster_label), by = c("country_code"))
+
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(sf)
+
+world <- ne_countries(scale = "small", returnclass = "sf") %>% 
+  filter(geounit != 'Antarctica')
+
+world_with_clusters <- world %>% 
+  select("country_code" = gu_a3, admin) %>% 
+  left_join(development_indicators)
+
+world_with_clusters %>% 
+  ggplot() + 
+  geom_sf(aes(fill = factor(cluster_label)))
+
+```
+
+
+
+
+

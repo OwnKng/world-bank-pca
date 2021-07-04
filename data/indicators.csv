@@ -1,0 +1,17 @@
+indicator_category,indicator_name,indicator_code
+Infrastructure,Mobile cellular subscriptions (per 100 people),IT.CEL.SETS.P2
+Infrastructure,Fixed broadband subscriptions (per 100 people),IT.NET.BBND.P2
+Health and Education,Current health expenditure (% of GDP),SH.XPD.CHEX.GD.ZS
+Health and Education,Current health expenditure per capita (current US$),SH.XPD.CHEX.PC.CD
+Health and Education,"Life expectancy at birth, total (years)",SP.DYN.LE00.IN
+Health and Education,"Literacy rate, adult total (% of people ages 15 and above)",SE.ADT.LITR.ZS
+Economic fundamentals,GDP (current US$),NY.GDP.MKTP.CD
+Economic fundamentals,GDP per capita (current US$),NY.GDP.PCAP.CD
+Demographics,Population density (people per sq. km of land area),EN.POP.DNST
+Demographics,Population growth (annual %),SP.POP.GROW
+Demographics,"Population, total",SP.POP.TOTL
+Demographics,Urban population (% of total population),SP.URB.TOTL.IN.ZS
+Infrastructure,Individuals using the Internet (% of population), IT.NET.USER.ZS
+Demographics,"Fertility rate, total (births per woman)",SP.DYN.TFRT.IN
+Demographics,Land area (sq. km),AG.LND.TOTL.K2
+Infrastructure,Ease of doing business score (0 = lowest performance to 100 = best performance),IC.BUS.DFRN.XQ

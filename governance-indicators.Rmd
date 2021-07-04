@@ -1,0 +1,49 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+
+path <- c('data/wgidataset.xlsx')
+
+governance <- tibble(indicator = readxl::excel_sheets("data/wgidataset.xlsx"))
+
+governance <- governance %>% 
+  mutate(data = map(indicator, readxl::read_xlsx, path = path, skip = 13, na = '#N/A')) %>% 
+  filter(indicator != 'Introduction')
+
+```
+
+```{r}
+
+select_cols <- function(.data) {
+  .data %>% 
+    select(`...1`, `...2`, contains("2019"))
+}
+
+governance <- governance %>% 
+  mutate(data = map(data, select_cols)) %>% 
+  unnest(data) %>% 
+  select(1, "country_name" = 2, "country_code" = 3, "score" = 4) %>% 
+  filter(score != "Estimate") %>% 
+  pivot_wider(names_from = indicator, values_from = score, names_prefix = "WGI - ") 
+
+governance[which(governance$country_code == 'ROM'), ]$country_code <- 'ROU'
+governance[which(governance$country_code == 'ZAR'), ]$country_code <- 'COD'
+governance[which(governance$country_code == 'TMP'), ]$country_code <- 'TLS'
+
+```
+
+```{r}
+
+governance %>% 
+  write_csv("data/wgi-governance.csv")
+
+```
+
+

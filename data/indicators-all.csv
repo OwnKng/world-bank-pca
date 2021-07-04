@@ -1,0 +1,28 @@
+indicator_category,indicator_name
+Infrastructure,Mobile cellular subscriptions (per 100 people)
+Infrastructure,Fixed broadband subscriptions (per 100 people)
+Health and Education,Current health expenditure (% of GDP)
+Health and Education,Current health expenditure per capita (current US$)
+Health and Education,"Life expectancy at birth, total (years)"
+Health and Education,"Literacy rate, adult total (% of people ages 15 and above)"
+Economic fundamentals,GDP (current US$)
+Economic fundamentals,GDP per capita (current US$)
+Demographics,Population density (people per sq. km of land area)
+Demographics,Population growth (annual %)
+Demographics,"Population, total"
+Demographics,Urban population (% of total population)
+Infrastructure,Individuals using the Internet (% of population)
+Demographics,"Fertility rate, total (births per woman)"
+Demographics,Land area (sq. km)
+Infrastructure,Ease of doing business score (0 = lowest performance to 100 = best performance)
+Freedom and Rights,Political rights score
+Freedom and Rights,Civil liberties score
+Economic fundamentals,5-year average GDP growth
+Economic fundamentals,5-year average GDP per capita growth
+Demographics,Population aged 0 - 40
+Governance,WGI - VoiceandAccountability
+Governance,WGI - Political StabilityNoViolence
+Governance,WGI - GovernmentEffectiveness
+Governance,WGI - RegulatoryQuality
+Governance,WGI - RuleofLaw
+Governance,WGI - ControlofCorruption

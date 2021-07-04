@@ -1,0 +1,62 @@
+---
+title: "demographics-cleaning"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+
+ages <- c("SP.POP.0004.FE", "SP.POP.0004.MA", "SP.POP.0509.FE", "SP.POP.0509.MA", "SP.POP.1014.FE", 
+          "SP.POP.1014.MA", "SP.POP.1519.MA", "SP.POP.1519.FE", "SP.POP.2024.MA", "SP.POP.2024.FE", "SP.POP.2529.FE",
+          "SP.POP.2529.MA", "SP.POP.3034.FE", "SP.POP.3034.MA", "SP.POP.3539.FE", "SP.POP.3539.MA", "SP.POP.4044.FE",
+          "SP.POP.4044.MA", "SP.POP.4549.FE", "SP.POP.4549.MA", "SP.POP.5054.FE", "SP.POP.5054.MA", "SP.POP.5559.FE",
+          "SP.POP.5559.MA", "SP.POP.6064.FE", "SP.POP.6064.MA", "SP.POP.6569.FE", "SP.POP.6569.MA", "SP.POP.7074.FE",
+          "SP.POP.7074.MA", "SP.POP.7579.FE", "SP.POP.7579.MA", "SP.POP.80UP.MA", "SP.POP.80UP.FE")
+
+demographics <- vroom::vroom("data/Population-EstimatesData.csv")
+
+demographics <- demographics %>% 
+  filter(`Indicator Code` %in% ages) %>% 
+  pivot_longer(cols = c(-1, -2, -3, -4), names_to = 'year', values_to='population') %>% 
+  janitor::clean_names() %>% 
+  mutate(year = str_sub(year, start = 1L, end = 4L) %>% as.numeric()) %>% 
+  separate(indicator_name, into = c('series', 'gender'), sep = ',') %>% 
+  select(-indicator_code) %>% 
+  filter(!is.na(series)) %>% 
+  group_by(year, country_code, country_name, series) %>% 
+  summarise(population = sum(population)) %>% 
+  ungroup() %>% 
+  group_by(year, country_name) %>% 
+  mutate(population = population/sum(population)) %>%
+  ungroup() %>% 
+  mutate(series = str_remove(series, " and above"),
+         age = str_sub(series, start = -2L) %>% as.numeric())  %>% 
+  mutate(decade = (age %/% 20) * 20) %>% 
+  group_by(year,country_code, country_name, decade) %>% 
+  summarise(population = sum(population)) %>% 
+  filter(year <= 2020) %>% 
+  ungroup()
+
+demographics
+
+```
+
+```{r}
+
+demographics_2019 <- demographics %>% 
+  filter(year == 2019) %>% 
+  group_by(year, country_code, country_name) %>% 
+  mutate(age = lead(decade)) %>% 
+  replace_na(list(age = '+')) %>% 
+  unite(age_band, decade, age, sep = ' - ') %>% 
+  pivot_wider(names_from = age_band, values_from = population, names_prefix = 'Populated aged ')
+
+demographics_2019 %>% 
+  write_csv("data/demographics-wide.csv")
+
+
+```
+

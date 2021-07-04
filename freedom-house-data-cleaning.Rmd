@@ -1,0 +1,41 @@
+
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+
+fh_scores <- readxl::read_xlsx("data/All_data_FIW_2013-2021.xlsx", sheet = "FIW13-21", skip = 1) %>% 
+  janitor::clean_names() %>% 
+  filter(edition == 2021) %>% 
+  select(country_territory, "Political rights score" = pr, "Civil liberties score" = cl, 'fh_total_score' = total)
+
+regions <- read_csv("data/continents2.csv") %>% 
+  select("country_territory" = 1, "country_code" = 3)
+
+fh_scores <- fh_scores %>% 
+  left_join(regions) 
+
+fh_scores <- fh_scores %>% 
+  mutate(
+    country_code = case_when(country_territory == "Bosnia and Herzegovina" ~ "BIH",
+                             country_territory == "Brunei" ~ "BRN",
+                             country_territory == "Cote d'Ivoire" ~ "CIV",
+                             country_territory == "Congo (Kinshasa)" ~ "COD",
+                             country_territory == "The Gambia" ~ "GMB",
+                             country_territory == "Guinea-Bissau" ~ "GNB",
+                             country_territory == "South Korea" ~ "KOR",
+                             country_territory == "St. Lucia" ~ "LCA",
+                             country_territory == "North Macedonia" ~ "MKD",
+                             country_territory == "St. Vincent and the Grenadines" ~ "VCT",
+                             TRUE ~ country_code
+                             )
+  )
+
+fh_scores %>% 
+  write_csv("data/fh_with_region.csv")
+
+```
+
+

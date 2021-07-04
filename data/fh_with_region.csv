@@ -1,0 +1,211 @@
+country_territory,Political rights score,Civil liberties score,fh_total_score,country_code
+Abkhazia,17,23,40,NA
+Afghanistan,13,14,27,AFG
+Albania,27,39,66,ALB
+Algeria,10,22,32,DZA
+Andorra,38,55,93,AND
+Angola,10,21,31,AGO
+Antigua and Barbuda,33,52,85,ATG
+Argentina,35,49,84,ARG
+Armenia,22,33,55,ARM
+Australia,40,57,97,AUS
+Austria,37,56,93,AUT
+Azerbaijan,2,8,10,AZE
+Bahamas,38,53,91,BHS
+Bahrain,2,10,12,BHR
+Bangladesh,15,24,39,BGD
+Barbados,38,57,95,BRB
+Belarus,2,9,11,BLR
+Belgium,39,57,96,BEL
+Belize,34,53,87,BLZ
+Benin,21,44,65,BEN
+Bhutan,30,31,61,BTN
+Bolivia,27,39,66,BOL
+Bosnia and Herzegovina,19,34,53,BIH
+Botswana,28,44,72,BWA
+Brazil,31,43,74,BRA
+Brunei,7,21,28,BRN
+Bulgaria,33,45,78,BGR
+Burkina Faso,23,31,54,BFA
+Burundi,4,10,14,BDI
+Cabo Verde,38,54,92,CPV
+Cambodia,5,19,24,KHM
+Cameroon,7,9,16,CMR
+Canada,40,58,98,CAN
+Central African Republic,3,6,9,CAF
+Chad,3,14,17,TCD
+Chile,38,55,93,CHL
+China,-2,11,9,CHN
+Colombia,29,36,65,COL
+Comoros,16,26,42,COM
+Congo (Brazzaville),2,18,20,NA
+Congo (Kinshasa),5,15,20,COD
+Costa Rica,38,53,91,CRI
+Cote d'Ivoire,16,28,44,CIV
+Crimea,-2,9,7,NA
+Croatia,36,49,85,HRV
+Cuba,1,12,13,CUB
+Cyprus,38,56,94,CYP
+Czech Republic,36,55,91,CZE
+Denmark,40,57,97,DNK
+Djibouti,5,19,24,DJI
+Dominica,37,56,93,DMA
+Dominican Republic,26,41,67,DOM
+Eastern Donbas,-1,5,4,NA
+Ecuador,27,40,67,ECU
+Egypt,6,12,18,EGY
+El Salvador,30,33,63,SLV
+Equatorial Guinea,0,5,5,GNQ
+Eritrea,1,1,2,ERI
+Estonia,38,56,94,EST
+Eswatini,1,18,19,SWZ
+Ethiopia,9,13,22,ETH
+Fiji,24,36,60,FJI
+Finland,40,60,100,FIN
+France,38,52,90,FRA
+Gabon,3,19,22,GAB
+Gaza Strip,3,8,11,NA
+Georgia,23,37,60,GEO
+Germany,39,55,94,DEU
+Ghana,35,47,82,GHA
+Greece,37,50,87,GRC
+Grenada,37,52,89,GRD
+Guatemala,21,31,52,GTM
+Guinea,14,24,38,GIN
+Guinea-Bissau,17,27,44,GNB
+Guyana,30,43,73,GUY
+Haiti,15,22,37,HTI
+Honduras,19,25,44,HND
+Hong Kong,15,37,52,HKG
+Hungary,26,43,69,HUN
+Iceland,37,57,94,ISL
+India,34,33,67,IND
+Indian Kashmir,7,20,27,NA
+Indonesia,30,29,59,IDN
+Iran,6,10,16,IRN
+Iraq,16,13,29,IRQ
+Ireland,39,58,97,IRL
+Israel,33,43,76,ISR
+Italy,36,54,90,ITA
+Jamaica,34,46,80,JAM
+Japan,40,56,96,JPN
+Jordan,11,23,34,JOR
+Kazakhstan,5,18,23,KAZ
+Kenya,19,29,48,KEN
+Kiribati,37,56,93,KIR
+Kosovo,23,31,54,NA
+Kuwait,14,23,37,KWT
+Kyrgyzstan,4,24,28,KGZ
+Laos,2,11,13,LAO
+Latvia,37,52,89,LVA
+Lebanon,13,30,43,LBN
+Lesotho,27,36,63,LSO
+Liberia,27,33,60,LBR
+Libya,1,8,9,LBY
+Liechtenstein,33,57,90,LIE
+Lithuania,38,52,90,LTU
+Luxembourg,38,59,97,LUX
+Madagascar,27,33,60,MDG
+Malawi,29,37,66,MWI
+Malaysia,21,30,51,MYS
+Maldives,19,21,40,MDV
+Mali,9,24,33,MLI
+Malta,35,55,90,MLT
+Marshall Islands,38,55,93,MHL
+Mauritania,14,21,35,MRT
+Mauritius,37,50,87,MUS
+Mexico,27,34,61,MEX
+Micronesia,37,55,92,NA
+Moldova,26,35,61,MDA
+Monaco,26,57,83,MCO
+Mongolia,36,48,84,MNG
+Montenegro,24,39,63,MNE
+Morocco,13,24,37,MAR
+Mozambique,14,29,43,MOZ
+Myanmar,13,15,28,MMR
+Nagorno-Karabakh,16,19,35,NA
+Namibia,31,46,77,NAM
+Nauru,34,43,77,NRU
+Nepal,25,31,56,NPL
+Netherlands,40,58,98,NLD
+New Zealand,40,59,99,NZL
+Nicaragua,10,20,30,NIC
+Niger,20,28,48,NER
+Nigeria,21,24,45,NGA
+North Korea,0,3,3,NA
+North Macedonia,27,39,66,MKD
+Northern Cyprus,28,50,78,NA
+Norway,40,60,100,NOR
+Oman,6,17,23,OMN
+Pakistan,15,22,37,PAK
+Pakistani Kashmir,9,19,28,NA
+Palau,37,55,92,PLW
+Panama,35,48,83,PAN
+Papua New Guinea,23,39,62,PNG
+Paraguay,28,37,65,PRY
+Peru,29,42,71,PER
+Philippines,25,31,56,PHL
+Poland,34,48,82,POL
+Portugal,39,57,96,PRT
+Qatar,7,18,25,QAT
+Romania,35,48,83,ROU
+Russia,5,15,20,RUS
+Rwanda,8,13,21,RWA
+Samoa,30,51,81,WSM
+San Marino,38,55,93,SMR
+Sao Tome and Principe,35,49,84,STP
+Saudi Arabia,1,6,7,SAU
+Senegal,29,42,71,SEN
+Serbia,22,42,64,SRB
+Seychelles,34,43,77,SYC
+Sierra Leone,28,37,65,SLE
+Singapore,19,29,48,SGP
+Slovakia,37,53,90,SVK
+Slovenia,39,56,95,SVN
+Solomon Islands,30,49,79,SLB
+Somalia,1,6,7,SOM
+Somaliland,18,24,42,NA
+South Africa,33,46,79,ZAF
+South Korea,33,50,83,KOR
+South Ossetia,2,8,10,NA
+South Sudan,-2,4,2,SSD
+Spain,37,53,90,ESP
+Sri Lanka,23,33,56,LKA
+St. Kitts and Nevis,35,54,89,NA
+St. Lucia,37,54,91,LCA
+St. Vincent and the Grenadines,36,55,91,VCT
+Sudan,2,15,17,SDN
+Suriname,34,45,79,SUR
+Sweden,40,60,100,SWE
+Switzerland,39,57,96,CHE
+Syria,-3,4,1,SYR
+Taiwan,38,56,94,TWN
+Tajikistan,0,8,8,TJK
+Tanzania,12,22,34,TZA
+Thailand,5,25,30,THA
+The Gambia,20,26,46,GMB
+Tibet,-2,3,1,NA
+Timor-Leste,33,39,72,TLS
+Togo,15,28,43,TGO
+Tonga,30,49,79,TON
+Transnistria,8,12,20,NA
+Trinidad and Tobago,33,49,82,TTO
+Tunisia,32,39,71,TUN
+Turkey,16,16,32,TUR
+Turkmenistan,0,2,2,TKM
+Tuvalu,37,56,93,TUV
+Uganda,11,23,34,UGA
+Ukraine,26,34,60,UKR
+United Arab Emirates,5,12,17,ARE
+United Kingdom,39,54,93,GBR
+United States,32,51,83,USA
+Uruguay,40,58,98,URY
+Uzbekistan,2,9,11,UZB
+Vanuatu,33,49,82,VUT
+Venezuela,1,13,14,VEN
+Vietnam,3,16,19,VNM
+West Bank,4,21,25,NA
+Western Sahara,-3,7,4,ESH
+Yemen,1,10,11,YEM
+Zambia,20,32,52,ZMB
+Zimbabwe,11,17,28,ZWE
